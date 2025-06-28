@@ -1,23 +1,26 @@
 const express = require('express');
-const app = express() //Rest object
 const cors = require('cors');
 const connectDb = require('./config/db');
 const dotenv = require('dotenv').config();
-const PORT = process.env.PORT || 5000;
 
-connectDb(); 
+const app = express();
+const PORT = process.env.PORT || 8080;
 
-//Middlewares
+// Connect DB
+connectDb();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use('/api/v1/test',require('./routes/testRouter')); 
 
+// Routes
+app.use('/api/v1/test', require('./routes/testRouter'));
+app.use('/api/v1/auth', require('./routes/authRoutes'));
 
-//Routes
-app.get('/test',(req,res)=>{
-    res.status(200)
+app.get('/test', (req, res) => {
+  res.status(200).send("Test route working");
 });
 
-app.listen(PORT,()=>{
-    console.log(`server is running on the port : ${PORT}`);
-})
+app.listen(PORT, () => {
+  console.log(`Server is running on port: ${PORT}`);
+});
