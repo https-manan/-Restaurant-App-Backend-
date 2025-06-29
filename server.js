@@ -16,6 +16,9 @@ app.use(express.json());
 // Routes
 app.use('/api/v1/test', require('./routes/testRouter'));
 app.use('/api/v1/auth', require('./routes/authRoutes'));
+app.use('/api/v1/user',require('./routes/userRoutes'))
+
+
 
 app.get('/test', (req, res) => {
   res.status(200).send("Test route working");

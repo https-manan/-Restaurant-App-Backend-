@@ -1,8 +1,11 @@
-const userModel = require("../models/userModel");
+const bcrypt = require('bcrypt');
+const userModel = require("../models/userModel");          
+const jwt = require('jsonwebtoken');
 
 const registerController = async (req, res) => {
     try {
         const { username, email, password, address, phone } = req.body;
+        const hashedPass = await bcrypt.hash(password,10);
 
         if (!username || !email || !password || !address || !phone) {
             console.log("Missing fields in request body");
@@ -24,7 +27,7 @@ const registerController = async (req, res) => {
         const user = await userModel.create({
             username,
             email,
-            password,
+            password: hashedPass,
             address,
             phone,
         });
@@ -47,4 +50,46 @@ const registerController = async (req, res) => {
     }
 };
 
-module.exports = { registerController };
+
+
+const loginController = async (req,res)=>{
+    const {email,password} = req.body;
+      if (!email || !password ) {
+            console.log("Missing fields in request body");
+            return res.status(500).json({
+                success: false,
+                message: 'Please provide all required fields',
+            });
+        }
+       
+     try {
+        const user = await userModel.findOne({email});
+        const isMatch = await bcrypt.compare(password, user.password); 
+        const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:'1d'})
+        if(user && isMatch){
+            return res.status(200).json({
+            success: true,
+            token,
+            message: "User logined successfully"
+        });  
+    }else{
+            return res.status(404).json({
+            success: false,
+            message: "SignUp! User donsen't exist in DB"
+        });
+    }
+     } catch (error) {
+        console.log(error);
+            return res.status(500).json({
+            success: false,
+            message: "Error in login API",
+            error: error.message,
+        });
+     }   
+}
+
+
+
+
+
+module.exports = { registerController,loginController };
