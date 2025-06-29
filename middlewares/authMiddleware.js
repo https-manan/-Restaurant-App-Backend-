@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
             });
         }
 
-        const token = authHeader.split(" ")[1]; // "Bearer <token>"
+        const token = authHeader.split(" ")[1]; 
 
         JWT.verify(token, process.env.JWT_SECRET, (err, decode) => {
             if (err) {
