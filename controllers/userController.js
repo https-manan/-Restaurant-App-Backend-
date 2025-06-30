@@ -1,17 +1,14 @@
 const userModel = require("../models/userModel")
-
+const bcrypt = require('bcrypt')
 const getUserController = async (req,res)=>{
     try {
-        //Find user
-        const user = await userModel.findOne({_id:req.body.id});
-        //Validation
+        const user = await userModel.findOne({_id:req.user.id});
         if(!user){
             res.status(404).send({
                 success:false,
                 message:'User not found'
             })
         }
-        //Hiding password
         user.password = undefined;
         res.status(200).send({
             success:true,
@@ -27,6 +24,8 @@ const getUserController = async (req,res)=>{
         })
     }
 }
+
+
 
 //UPDATE USER   
 const updateUserController = async (req, res) => {
@@ -69,5 +68,77 @@ const updateUserController = async (req, res) => {
 };
 
 
-module.exports = {getUserController,updateUserController}
+
+//RESET PASSWORD
+const resetPasswordController = async (req, res) => {
+    try {
+        const { email, newPassword, answer } = req.body;
+
+        if (!email || !newPassword || !answer) {
+            return res.status(400).send({
+                success: false,
+                message: 'Enter full details',
+            });
+        }
+
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: 'User not found in DB',
+            });
+        }
+
+        if (user.answer !== answer) {
+            return res.status(401).send({
+                success: false,
+                message: 'Security answer is incorrect',
+            });
+        }
+
+        const newHashPass = await bcrypt.hash(newPassword, 10);
+        user.password = newHashPass;
+        await user.save();
+
+        res.status(200).send({
+            success: true,
+            message: 'Password has been reset successfully',
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success: false,
+            message: 'Error in reset API',
+        });
+    }
+};
+
+const delProfileController = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send({
+                success: false,
+                message: 'User does not exist in DB',
+            });
+        }
+
+        await userModel.deleteOne({ _id: req.params.id });
+
+        return res.status(200).send({
+            success: true,
+            message: 'User deleted successfully',
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Issue in deleting API',
+        });
+    }
+};
+
+
+module.exports = {getUserController,updateUserController,delProfileController,resetPasswordController}
 

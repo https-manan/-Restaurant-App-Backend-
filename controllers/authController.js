@@ -4,12 +4,12 @@ const jwt = require('jsonwebtoken');
 
 const registerController = async (req, res) => {
     try {
-        const { username, email, password, address, phone } = req.body;
+        const { username, email, password, address, phone,answer} = req.body;
         const hashedPass = await bcrypt.hash(password,10);
 
-        if (!username || !email || !password || !address || !phone) {
+        if (!username || !email || !password || !address || !phone ||!answer) {
             console.log("Missing fields in request body");
-            return res.status(400).json({
+            return res.status(400).json({ 
                 success: false,
                 message: 'Please provide all required fields',
             });
@@ -30,6 +30,7 @@ const registerController = async (req, res) => {
             password: hashedPass,
             address,
             phone,
+            answer
         });
 
         console.log("User created:", user);
