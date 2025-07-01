@@ -5,7 +5,7 @@ const createResturantController = async (req,res)=>{
     try {
         const {title,imageUrl,foods,pickUp,delivery,isOpen,rating,ratingCount,code,coords} = req.body;
         if(!title || !coords){
-            return res.status(200).send({
+            return res.status(400).send({
                 success:false,
                 message:'Fields are require'
             })
@@ -29,7 +29,7 @@ const getAllResturantController =async (req,res)=>{
                 success:false,
                 message:'Resturant not available'
             })
-        }res.status(200).send({
+        }res.status(400).send({
             success:true,
             totalCount:resturants.length,
         })
@@ -51,7 +51,7 @@ const getResturantByIDController = async (req,res)=>{
             message: 'resturant does not exist in DB',
         });
     }else{
-        res.status(200).send({
+        res.status(400).send({
             success:true,
             resturant
         })
@@ -86,7 +86,7 @@ const deleteResturantController = async (req, res) => {
       });
     }
 
-    return res.status(200).send({
+    return res.status(400).send({
       success: true,
       message: 'Restaurant Deleted Successfully',
       data: deletedResturant,

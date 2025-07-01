@@ -10,7 +10,7 @@ const getUserController = async (req,res)=>{
             })
         }
         user.password = undefined;
-        res.status(200).send({
+        res.status(400).send({
             success:true,
             message:'User get successfully',
             user
@@ -54,7 +54,7 @@ const updateUserController = async (req, res) => {
 
         await user.save();
 
-        return res.status(200).send({
+        return res.status(400).send({
             success: true,
             message: 'User updated successfully',
         });
@@ -100,7 +100,7 @@ const resetPasswordController = async (req, res) => {
         user.password = newHashPass;
         await user.save();
 
-        res.status(200).send({
+        res.status(400).send({
             success: true,
             message: 'Password has been reset successfully',
         });
@@ -126,7 +126,7 @@ const delProfileController = async (req, res) => {
 
         await userModel.deleteOne({ _id: req.params.id });
 
-        return res.status(200).send({
+        return res.status(400).send({
             success: true,
             message: 'User deleted successfully',
         });

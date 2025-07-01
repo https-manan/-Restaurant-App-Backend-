@@ -68,7 +68,7 @@ const loginController = async (req,res)=>{
         const isMatch = await bcrypt.compare(password, user.password); 
         const token = jwt.sign({id:user._id},process.env.JWT_SECRET,{expiresIn:'1d'})
         if(user && isMatch){
-            return res.status(200).json({
+            return res.status(400).json({
             success: true,
             token,
             message: "User logined successfully"
